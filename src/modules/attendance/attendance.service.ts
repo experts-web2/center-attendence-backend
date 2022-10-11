@@ -56,12 +56,6 @@ export class AttendanceService {
   }
 
   async filterAttendance(data: GetAttendanceQueryParams) {
-    console.log('data', data);
-    const doo = data?.cityManager?.map((itm) => {
-      console.log('itm', itm);
-      return itm.label;
-    });
-    console.log('doo', doo);
     try {
       let mongooseQuery = {};
       if (data.city) {
@@ -73,8 +67,7 @@ export class AttendanceService {
       if (data.centerManager) {
         mongooseQuery = { ...mongooseQuery, center: data.centerManager };
       }
-      if (data.cityManager) {
-        console.log('siti', data.cityManager);
+      if (data.city && data.center && data.cityManager || data.cityManager) {
         const unwindResult = await this.model.aggregate([
           {
             $match: {
@@ -90,18 +83,17 @@ export class AttendanceService {
           },
           {
             $group: {
-              // if you want to group by multiple fields, just add them here (comma separated
               _id: '$cityManager',
+              record: { $push: '$$ROOT' },
               count: {
                 $sum: 1,
               },
             },
           },
         ]);
-        // return those results to the client that match the query and store them in the variable "result"
-        // loop and check if the result is empty
         const finalResult = [];
         const myResult = unwindResult.map((itm) => {
+
           if (data.cityManager.includes(itm._id)) {
             if (data.cityManager === undefined || data.cityManager === null) {
               null;
@@ -111,7 +103,6 @@ export class AttendanceService {
             }
           }
         });
-        console.log('cityManagerCount', myResult);
         return myResult;
       }
       if (data.startDate) {

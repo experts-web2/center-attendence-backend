@@ -29,7 +29,7 @@ export class UserService {
     @InjectModel(User.name) private model: Model<UserDocument>,
     private jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) {}
+  ) { }
 
   async validateUser(
     username: string,
