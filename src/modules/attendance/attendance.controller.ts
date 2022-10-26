@@ -26,7 +26,6 @@ export class AttendanceController {
 
   @Post('/attendance')
   addAttendance(@Body() AttendanceDto: AttendanceDto): any {
-    console.log('AttendanceDto', AttendanceDto);
     // return AttendanceDto;
     return this.AttendanceService.saveAttendance(AttendanceDto);
   }

@@ -35,6 +35,9 @@ export class Attendance {
 
   @Prop({ default: Date.now() })
   date: Date;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User'})
+  user: string;
 }
 
 export type AttendanceDocument = Attendance & Document;

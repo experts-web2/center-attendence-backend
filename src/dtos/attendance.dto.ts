@@ -38,6 +38,9 @@ export class GetAttendanceQueryParams {
   @ApiPropertyOptional()
   centerManager: any;
 
+  @ApiPropertyOptional()
+  user: any;
+
   // @ApiPropertyOptional()
   // cityCount: any;
 

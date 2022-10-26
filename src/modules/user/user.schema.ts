@@ -22,8 +22,8 @@ export class User {
   @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'Center' }])
   center: string;
 
-  @Prop({ required: true })
-  role: string;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'userrole' })
+  role: any;
 
   @Prop({ required: false })
   status: string;
