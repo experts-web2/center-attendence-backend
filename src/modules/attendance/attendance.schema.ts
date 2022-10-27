@@ -30,7 +30,7 @@ export class Attendance {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'user' })
   cityManager: [];
 
-  @Prop({ required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'user' })
   centerManager: [];
 
   @Prop({ default: Date.now() })
