@@ -11,12 +11,14 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Attendance, AttendanceDocument } from './attendance.schema';
-import { UserDocument } from 'src/modules/user/user.schema';
+import { User, UserDocument } from 'src/modules/user/user.schema';
 import {
   AttendanceDto,
   GetAttendanceQueryParams,
   FilterAttendanceDto,
 } from '../../dtos';
+import { ObjectId, Types } from 'mongoose';
+const ObjectId = Types.ObjectId;
 @Injectable()
 export class AttendanceService {
   constructor(
@@ -51,13 +53,13 @@ export class AttendanceService {
     try {
       let mongooseQuery = {};
       if (data.city) {
-        mongooseQuery = { ...mongooseQuery, city: data.city };
+        mongooseQuery = { ...mongooseQuery, center: data.center, city: data.city };
       }
       if (data.center) {
         mongooseQuery = { ...mongooseQuery, center: data.center };
       }
       if (data.centerManager) {
-        mongooseQuery = { ...mongooseQuery, center: data.centerManager };
+        mongooseQuery = { ...mongooseQuery, centerManager: data.centerManager };
       }
       if (data.city && data.center && data.cityManager || data.cityManager) {
         const unwindResult = await this.model.aggregate([
@@ -123,15 +125,83 @@ export class AttendanceService {
     }
   }
 
-  // async getAttendance(): Promise<any> {
-  //   try {
-  //     const attendance = this.model.find();
 
-  //     return attendance;
-  //   } catch (error) {
-  //     throw new BadRequestException(null, 'Not Found');
-  //   }
-  // }
+  async attendanceFilter(data: GetAttendanceQueryParams) {
+    try {
+      if (data.cityManager) {
+        let cityManagers: any = [];
+        await data.cityManager.forEach((element: any) => {
+          cityManagers.push(new ObjectId(element))
+        });
+        let condition = []
+        condition.push({ cityManager: { $in: cityManagers } })
+        if (data.startDate && data.endDate) {
+          const start = new Date(data.startDate);
+          const end = new Date(data.endDate);
+          let dateFIlter = {
+            date: {
+              $gte: start,
+              $lte: end,
+            },
+            leave: { $exists: false },
+          };
+          condition = [...condition, dateFIlter]
+        }
+        let myResult = await this.model.aggregate([
+          {
+            $match: {
+              $and: condition
+            },
+          },
+          {
+            $unwind: {
+              path: '$cityManager',
+              preserveNullAndEmptyArrays: true,
+              includeArrayIndex: 'string',
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              let: { userId: "$user" },
+              pipeline: [
+                { $match: { $expr: { $eq: ["$_id", "$$userId"] } } },
+              ],
+              as: "User",
+            },
+          },
+          {
+            $unwind: {
+              path: '$User',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $addFields: { name: '$User.name' }
+          },
+          {
+            $project: {
+              User: 0
+            }
+          },
+          {
+            $group: {
+              _id: '$user',
+              record: { $push: '$$ROOT' },
+              count: {
+                $sum: 1,
+              },
+              name: { $first: "$name" }
+            },
+          },
+        ])
+        return myResult;
+      }
+    } catch (error) {
+      return error;
+    }
+  }
+
 
   async getAttendance(params: GetAttendanceQueryParams) {
     console.log('params', params);

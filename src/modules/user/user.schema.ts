@@ -22,7 +22,7 @@ export class User {
   @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'Center' }])
   center: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'userrole' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'userRoles' })
   role: any;
 
   @Prop({ required: false })

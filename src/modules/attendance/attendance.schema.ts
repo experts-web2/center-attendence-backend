@@ -27,7 +27,7 @@ export class Attendance {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Center' })
   center: string;
 
-  @Prop({ required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'user' })
   cityManager: [];
 
   @Prop({ required: true })

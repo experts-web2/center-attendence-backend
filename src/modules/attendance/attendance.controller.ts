@@ -34,6 +34,11 @@ export class AttendanceController {
     return await this.AttendanceService.filterAttendance(data);
   }
 
+  @Post('/attendance/filter')
+  async attendancefilter(@Body() data: GetAttendanceQueryParams): Promise<any> {
+    return await this.AttendanceService.attendanceFilter(data);
+  }
+
   // @Get('/attendance')
   // async getAttendance(): Promise<any> {
   //   // console.log('query', query);

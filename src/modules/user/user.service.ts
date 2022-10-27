@@ -198,21 +198,18 @@ export class UserService {
   // }
   async getRoleByID(centerId: any, cityId: any): Promise<any> {
     try {
-      console.log('center', centerId.cityId, 'city', cityId);
-      // const ar = [];
       const data = await this.model.find({
         city: { $in: [centerId.cityId] },
         center: { $in: [centerId.centerId] },
-      });
-
+      }).populate('role')
       const cityManagers = [];
       const centerManagers = [];
 
       const trd = data.map((item) => {
         console.log('items', item);
-        if (item.role === 'City Manager') {
+        if (item.role.role == 'City Manager') {
           cityManagers.push(item.name);
-        } else if (item.role === 'Center Manager') {
+        } else if (item.role.role == 'Center Manager') {
           centerManagers.push(item.name);
         } else {
           null;
