@@ -31,13 +31,13 @@ export class AttendanceService {
   }
 
   async filterAttendance(data: GetAttendanceQueryParams) {
-    console.log('BODY', data)
+    // console.log('BODY', data)
 
     try {
       let mongooseQuery = {};
       if (data.city) {
         mongooseQuery = { ...mongooseQuery, center: data.center, city: data.city };
-        console.log('QUERY', mongooseQuery)
+        // console.log('QUERY', mongooseQuery)
       }
       if (data.center) {
         mongooseQuery = { ...mongooseQuery, center: data.center };
@@ -188,7 +188,7 @@ export class AttendanceService {
   async getAttendance(params: GetAttendanceQueryParams) {
     try {
       var offset = parseInt(params.offset) ? parseInt(params.offset) : 0;
-      var limit = parseInt(params.limit) ? parseInt(params.limit) : 6;
+      var limit = parseInt(params.limit) ? parseInt(params.limit) : 4;
       const attendance = await this.model.find({ deleted: false, center: params.center })
         .skip(offset)
         .limit(limit)

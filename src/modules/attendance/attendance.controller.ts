@@ -47,7 +47,7 @@ export class AttendanceController {
 
   @Get('/attendance')
   async getAttendance(@Query() query: GetAttendanceQueryParams): Promise<any> {
-    console.log('query', query);
+    // console.log('query', query);
     return await this.AttendanceService.getAttendance(query);
   }
 

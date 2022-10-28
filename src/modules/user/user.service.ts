@@ -206,7 +206,7 @@ export class UserService {
       const centerManagers = [];
 
       const trd = data.map((item) => {
-        console.log('items', item);
+        // console.log('items', item);
         if (item.role.role == 'City Manager') {
           cityManagers.push(item.name);
         } else if (item.role.role == 'Center Manager') {
