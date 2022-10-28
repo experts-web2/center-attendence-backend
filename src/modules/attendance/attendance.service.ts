@@ -1,33 +1,14 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  NotAcceptableException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-
 import { InjectModel } from '@nestjs/mongoose';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import { MailerService } from '@nestjs-modules/mailer';
-import { Attendance, AttendanceDocument } from './attendance.schema';
-import { User, UserDocument } from 'src/modules/user/user.schema';
-import {
-  AttendanceDto,
-  GetAttendanceQueryParams,
-  FilterAttendanceDto,
-} from '../../dtos';
+import { AttendanceDocument } from './attendance.schema';
+import { AttendanceDto, GetAttendanceQueryParams } from '../../dtos';
 import { ObjectId, Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 @Injectable()
 export class AttendanceService {
-  constructor(
-    @InjectModel('AttendanceDto') private model: Model<AttendanceDocument>,
-    @InjectModel('User') private UserDocumentModel: Model<UserDocument>,
-  ) { }
-  // attendance: AttendanceDto[] = [];
+  constructor(@InjectModel('AttendanceDto') private model: Model<AttendanceDocument>) { }
   data: any;
-
   async saveAttendance(AttendanceDto: any) {
     try {
       const mydata = {
@@ -50,10 +31,13 @@ export class AttendanceService {
   }
 
   async filterAttendance(data: GetAttendanceQueryParams) {
+    console.log('BODY',data)
+
     try {
       let mongooseQuery = {};
       if (data.city) {
         mongooseQuery = { ...mongooseQuery, center: data.center, city: data.city };
+        console.log('QUERY',mongooseQuery)
       }
       if (data.center) {
         mongooseQuery = { ...mongooseQuery, center: data.center };
@@ -87,7 +71,6 @@ export class AttendanceService {
         ]);
         const finalResult = [];
         const myResult = unwindResult.map((itm) => {
-
           if (data.cityManager.includes(itm._id)) {
             if (data.cityManager === undefined || data.cityManager === null) {
               null;
@@ -113,18 +96,12 @@ export class AttendanceService {
       if (!data) {
         mongooseQuery = { deleted: false };
       }
-      const result = await this.model
-        .find(mongooseQuery)
-        .lean()
-        .populate('city')
-        .populate('center')
-        .exec();
+      const result = await this.model.find(mongooseQuery).lean().populate('city').populate('center').exec();
       return result;
     } catch (error) {
       return error;
     }
   }
-
 
   async attendanceFilter(data: any) {
     try {
@@ -138,13 +115,7 @@ export class AttendanceService {
         if (data.startDate && data.endDate) {
           const start = new Date(data.startDate);
           const end = new Date(data.endDate);
-          let dateFIlter = {
-            date: {
-              $gte: start,
-              $lte: end,
-            },
-            leave: { $exists: false },
-          };
+          let dateFIlter = { date: { $gte: start, $lte: end }, leave: { $exists: false } };
           condition = [...condition, dateFIlter]
         }
         let myResult = await this.model.aggregate([
@@ -195,7 +166,18 @@ export class AttendanceService {
             },
           },
         ])
-        return myResult;
+
+        let label =[]
+        let dataSet =[]
+        myResult.forEach((item:any) => {
+          label.push(item.name)
+          dataSet.push(item.count)                    
+        });
+
+        let result={label,dataSet}
+
+
+        return result;
       }
     } catch (error) {
       return error;
@@ -204,9 +186,7 @@ export class AttendanceService {
 
 
   async getAttendance(params: GetAttendanceQueryParams) {
-    console.log('params', params);
     try {
-
       const attendance = await this.model.find({ deleted: false, center: params.center })
         .lean()
         .populate('city')
@@ -228,11 +208,7 @@ export class AttendanceService {
 
   async updateAttendance(id: string, attendance: AttendanceDto): Promise<any> {
     try {
-      const attendanceResult = await this.model.findByIdAndUpdate(
-        id,
-        attendance,
-      );
-      console.log('attendanceResult', attendanceResult);
+      const attendanceResult = await this.model.findByIdAndUpdate(id, attendance);
       return attendanceResult;
     } catch {
       throw new BadRequestException(null, 'Not Found');
