@@ -126,7 +126,7 @@ export class AttendanceService {
   }
 
 
-  async attendanceFilter(data: GetAttendanceQueryParams) {
+  async attendanceFilter(data: any) {
     try {
       if (data.cityManager) {
         let cityManagers: any = [];
@@ -187,7 +187,7 @@ export class AttendanceService {
           {
             $group: {
               _id: '$user',
-              record: { $push: '$$ROOT' },
+              // record: { $push: '$$ROOT' },
               count: {
                 $sum: 1,
               },
