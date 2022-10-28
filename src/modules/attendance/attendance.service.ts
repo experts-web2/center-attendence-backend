@@ -31,13 +31,13 @@ export class AttendanceService {
   }
 
   async filterAttendance(data: GetAttendanceQueryParams) {
-    console.log('BODY',data)
+    console.log('BODY', data)
 
     try {
       let mongooseQuery = {};
       if (data.city) {
         mongooseQuery = { ...mongooseQuery, center: data.center, city: data.city };
-        console.log('QUERY',mongooseQuery)
+        console.log('QUERY', mongooseQuery)
       }
       if (data.center) {
         mongooseQuery = { ...mongooseQuery, center: data.center };
@@ -167,14 +167,14 @@ export class AttendanceService {
           },
         ])
 
-        let label =[]
-        let dataSet =[]
-        myResult.forEach((item:any) => {
+        let label = []
+        let dataSet = []
+        myResult.forEach((item: any) => {
           label.push(item.name)
-          dataSet.push(item.count)                    
+          dataSet.push(item.count)
         });
 
-        let result={label,dataSet}
+        let result = { label, dataSet }
 
 
         return result;
@@ -187,7 +187,11 @@ export class AttendanceService {
 
   async getAttendance(params: GetAttendanceQueryParams) {
     try {
+      var offset = parseInt(params.offset) ? parseInt(params.offset) : 0;
+      var limit = parseInt(params.limit) ? parseInt(params.limit) : 6;
       const attendance = await this.model.find({ deleted: false, center: params.center })
+        .skip(offset)
+        .limit(limit)
         .lean()
         .populate('city')
         .populate('center')
