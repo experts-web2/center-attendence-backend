@@ -18,28 +18,37 @@ export class FilterAttendanceDto {
   user: any;
   date: any;
 }
+export class FilterAttendance {
+  cityManager: any;
+}
 
 export class GetAttendanceQueryParams {
   @ApiPropertyOptional()
-  city: any;
+  city?: any;
 
   @ApiPropertyOptional()
-  center: any;
+  center?: any;
 
   @ApiPropertyOptional()
-  startDate: any;
+  startDate?: any;
 
   @ApiPropertyOptional()
-  endDate: any;
+  endDate?: any;
 
   @ApiPropertyOptional()
   cityManager: any;
 
   @ApiPropertyOptional()
-  centerManager: any;
+  centerManager?: any;
 
   @ApiPropertyOptional()
-  user: any;
+  user?: any;
+  
+  @ApiPropertyOptional()
+  offset?: any; 
+  
+  @ApiPropertyOptional()
+  limit?: any;
 
   // @ApiPropertyOptional()
   // cityCount: any;
