@@ -691,6 +691,15 @@
     "optional" "0.1.4"
     "tslib" "2.1.0"
 
+"@nestjs/websockets@^9.1.6":
+  "integrity" "sha512-n6ldWU2FdVFESTj0ahmGLDEOT0sc3QKLya7N/L7dh8Z5F50gqd5Qw6LPmhRWcyXLGi+1Ugn1ZMnLn62B1CsZ7A=="
+  "resolved" "https://registry.npmjs.org/@nestjs/websockets/-/websockets-9.1.6.tgz"
+  "version" "9.1.6"
+  dependencies:
+    "iterare" "1.2.1"
+    "object-hash" "3.0.0"
+    "tslib" "2.4.0"
+
 "@nuxtjs/opencollective@0.3.2":
   "integrity" "sha512-um0xL3fO7Mf4fDxcqx9KryrB7zgRM5JSlvGN5AGkP6JLM5XEKyjeAiPbNxdXVXQ16isuAhYpvP88NgL2BGd6aA=="
   "resolved" "https://registry.npmjs.org/@nuxtjs/opencollective/-/opencollective-0.3.2.tgz"

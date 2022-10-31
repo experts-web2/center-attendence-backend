@@ -28,6 +28,7 @@
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.11",
     "@nestjs/swagger": "^6.0.5",
+    "@nestjs/websockets": "^9.1.6",
     "@types/mongodb": "^4.0.7",
     "bcrypt": "^5.0.1",
     "migrate-mongo": "^8.2.2",

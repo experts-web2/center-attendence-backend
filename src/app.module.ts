@@ -11,6 +11,7 @@ import { CenterModule } from './modules/center/center.module';
 import { UserRoleModule } from './modules/role/userRole.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
 import { PasswordModule } from './modules/password/password.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PasswordModule } from './modules/password/password.module';
     CenterModule,
     AttendanceModule,
     UserRoleModule,
+    NotificationModule,
     // PasswordModule,
   ],
   controllers: [AppController],
