@@ -7,7 +7,6 @@ import { CenterDto, GetCentersQueryParams } from '../../dtos/center.dto';
 @Injectable()
 export class CenterService {
   constructor(@InjectModel(Center.name) private model: Model<CenterDocument>) {}
-
   async createCenter(center: CenterDto): Promise<string> {
     try {
       const newCenter = new this.model(center);
