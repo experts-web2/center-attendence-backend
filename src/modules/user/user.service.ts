@@ -204,18 +204,15 @@ export class UserService {
       }).populate('role')
       const cityManagers = [];
       const centerManagers = [];
-
       const trd = data.map((item) => {
-        // console.log('items', item);
         if (item.role.role == 'City Manager') {
-          cityManagers.push(item.name);
+          cityManagers.push({label:item.name,value:item._id});
         } else if (item.role.role == 'Center Manager') {
-          centerManagers.push(item.name);
+          centerManagers.push({label:item.name,value:item._id});
         } else {
           null;
         }
       });
-      console.log('trd', trd);
       return { cityManagers, centerManagers };
     } catch (error) {
       throw error;
