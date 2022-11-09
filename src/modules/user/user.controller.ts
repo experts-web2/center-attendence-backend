@@ -45,6 +45,8 @@ export class UserController {
     return await this.service.saveUser(user);
   }
 
+  
+
   // @Public()
   // @Get('forgot-password')
   // async forgotPassword(
@@ -76,9 +78,9 @@ export class UserController {
   @Put('/:id')
   async updateUser(
     @Param('id') id: string,
-    @Body() user: UserDto,
+    @Body() deviceToken: UserDto,
   ): Promise<boolean> {
-    return this.service.updateUser(id, user);
+    return this.service.updateUser(id, deviceToken);
   }
 
   @Post('/update')

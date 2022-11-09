@@ -10,7 +10,9 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { User, UserDocument } from './user.schema';
+import { FirebaseModule, FirebaseAdmin } from 'nestjs-firebase';
 import { forgotPasswordDto, statusDto } from '../../dtos';
+import * as admin from 'firebase-admin';
 import {
   UserDto,
   UserLoginDto,
@@ -29,7 +31,7 @@ export class UserService {
     @InjectModel(User.name) private model: Model<UserDocument>,
     private jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) { }
+  ) {}
 
   async validateUser(
     username: string,
@@ -53,6 +55,51 @@ export class UserService {
     password,
   }: UserLoginDto): Promise<UserLoginResponseDto> {
     try {
+      // start
+      console.log('end pount hit');
+      const registrationTokens = [
+        'f_xQxOB2SGaB1_OJqohFTL:APA91bF_6_Dn5SVHZ9-jKkWRZZafeKj9Ga2dHx3FnrA8CSbZqDidnTUCKM4A8a_hxglAuCnVfkGJhop49z9SEHENye-4JnQAdlqkx58kHVEjpHTni1SSxhHoDcoxeosVaxXXbzVjI4av',
+      ];
+      const message: any = {
+        tokens: registrationTokens,
+        notification: {
+          body: 'This is an FCM notification that displays an image!',
+          title: 'FCM Notification',
+        },
+        apns: {
+          payload: {
+            aps: {
+              'mutable-content': 1,
+            },
+          },
+          fcm_options: {
+            image: 'image-url',
+          },
+        },
+        android: {
+          notification: {
+            image: 'image-url',
+          },
+        },
+      };
+      admin
+        .messaging()
+        .sendToDevice(
+          'f_xQxOB2SGaB1_OJqohFTL:APA91bF_6_Dn5SVHZ9-jKkWRZZafeKj9Ga2dHx3FnrA8CSbZqDidnTUCKM4A8a_hxglAuCnVfkGJhop49z9SEHENye-4JnQAdlqkx58kHVEjpHTni1SSxhHoDcoxeosVaxXXbzVjI4av',
+          {
+            notification: {
+              title: 'FCM Notification',
+              body: 'This is an FCM notification that displays an image!',
+            },
+          },
+        )
+        .then((response) => {
+          console.log('Successfully sent message:', response);
+        })
+        .catch((error) => {
+          console.log('Error sending message:', error);
+        });
+      // end
       if (!email || !password)
         throw new BadRequestException(null, 'Required Parameters Missing');
       const user: any = await this.model.findOne({ email });
@@ -68,7 +115,8 @@ export class UserService {
           username: newUser.name,
           sub: newUser._id,
         });
-        return { newUser: rest, token };
+        return { msg: 'Success', newUser: rest, token };
+        // get last index of array
       }
     } catch (error) {
       throw new NotFoundException(null, 'User Not Found');
@@ -83,6 +131,16 @@ export class UserService {
       console.log('USER', user);
       console.log('result', result);
       return result;
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  async updateUserToken(data: any) {
+    try {
+      const { _id, token } = data;
+      const newData = await this.model.findOneAndUpdate({ _id }, { token });
+      return newData;
     } catch (error) {
       return error.message;
     }
@@ -152,9 +210,14 @@ export class UserService {
     }
   }
 
-  async updateUser(id: string, user: UserDto): Promise<boolean> {
+  async updateUser(id: string, deviceToken: UserDto): Promise<boolean> {
+    console.log('id', id, deviceToken);
     try {
-      const data = await this.model.findByIdAndUpdate(id, user);
+      const myToken = deviceToken.deviceToken;
+      console.log('myToken', myToken);
+      const data = await this.model.findByIdAndUpdate(id, {
+        deviceToken: myToken,
+      });
       console.log('data', data);
       return true;
     } catch {
@@ -198,17 +261,19 @@ export class UserService {
   // }
   async getRoleByID(centerId: any, cityId: any): Promise<any> {
     try {
-      const data = await this.model.find({
-        city: { $in: [centerId.cityId] },
-        center: { $in: [centerId.centerId] },
-      }).populate('role')
+      const data = await this.model
+        .find({
+          city: { $in: [centerId.cityId] },
+          center: { $in: [centerId.centerId] },
+        })
+        .populate('role');
       const cityManagers = [];
       const centerManagers = [];
       const trd = data.map((item) => {
         if (item.role.role == 'City Manager') {
-          cityManagers.push({label:item.name,value:item._id});
+          cityManagers.push({ label: item.name, value: item._id });
         } else if (item.role.role == 'Center Manager') {
-          centerManagers.push({label:item.name,value:item._id});
+          centerManagers.push({ label: item.name, value: item._id });
         } else {
           null;
         }

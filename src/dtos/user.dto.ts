@@ -11,6 +11,9 @@ export class UserDto {
   status?: any;
   verified?: boolean;
   deleted?: boolean;
+  deviceToken?: any;
+  msg?: any;
+  data?: any;
 }
 export class statusDto {
   status: any;
@@ -27,6 +30,7 @@ export class UserLoginDto {
 export class UserLoginResponseDto {
   newUser: Omit<UserDto, 'password'>;
   token: string;
+  msg:string;
 }
 
 export class ChangePasswordDto {

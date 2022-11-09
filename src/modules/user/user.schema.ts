@@ -33,6 +33,9 @@ export class User {
 
   @Prop({ default: false })
   deleted: boolean;
+
+  @Prop({ required: false })
+  deviceToken: string;
 }
 
 export type UserDocument = User & Document;
