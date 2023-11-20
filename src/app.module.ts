@@ -15,7 +15,7 @@ import { PasswordModule } from './modules/password/password.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb+srv://ghulam:ghulam123@cluster0.hu5pa.mongodb.net/attendance?retryWrites=true&w=majority',
+      'mongodb+srv://ahsenhameed381:Shine&f9@cluster0.9q2ev15.mongodb.net/attandance',
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,

@@ -13,7 +13,7 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('api');
   prepareSwagger(app);
-  await app.listen(3000);
+  await app.listen(4000);
 }
 
 const prepareSwagger = (app: INestApplication) => {

@@ -26,8 +26,8 @@ export class AttendanceController {
 
   @Post('/attendance')
   addAttendance(@Body() AttendanceDto: AttendanceDto): any {
-    console.log('AttendanceDto', AttendanceDto);
     // return AttendanceDto;
+    console.log('AttendanceDto', AttendanceDto);
     return this.AttendanceService.saveAttendance(AttendanceDto);
   }
   @Post('/filter-attendance')
@@ -57,5 +57,11 @@ export class AttendanceController {
     @Body() attendance: AttendanceDto,
   ): Promise<any> {
     return this.AttendanceService.updateAttendance(id, attendance);
+  } 
+  
+  @Post('/attendanceByCityCenterId')
+  async getAttendanceByCityCenterId(@Body() data: any): Promise<any> {
+    console.log('data', data);
+    return await this.AttendanceService.getAttendanceByCityCenterId(data);
   }
 }

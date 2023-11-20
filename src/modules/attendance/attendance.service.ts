@@ -18,6 +18,9 @@ import {
 } from '../../dtos';
 import { Console } from 'console';
 const moment = require('moment');
+import { Types } from 'mongoose';
+const ObjectId = Types.ObjectId;
+
 @Injectable()
 export class AttendanceService {
   constructor(
@@ -27,27 +30,22 @@ export class AttendanceService {
   data: any;
 
   async saveAttendance(AttendanceDto: any) {
+    console.log('AttendanceDtoooooooooooooooooo', AttendanceDto);
     try {
-      const cityManagers = [];
-      const centerManager = [];
-      console.log('DTOOO', AttendanceDto);
-      await AttendanceDto.cityManager.map((item) => {
-        cityManagers.unshift(item.value);
-      });
-      await AttendanceDto.centerManager.map((item) => {
-        centerManager.unshift(item.value);
-      });
+     
+
       const mydata = {
         newMembers: AttendanceDto.newMembers,
         employees: AttendanceDto.employees,
         nonEmployees: AttendanceDto.nonEmployees,
         city: AttendanceDto.city,
         center: AttendanceDto.center,
-        cityManager: cityManagers,
-        centerManager: centerManager,
-        date: AttendanceDto.date,
+        cityManager: AttendanceDto.cityManagers,
+        centerManager: AttendanceDto.centerManagers,
+        date: new Date(),
       };
-      const newAttendance = new this.model(mydata);
+      console.log('mydata', mydata);
+      const newAttendance = await new this.model(mydata);
       const result = await newAttendance.save();
       return result;
     } catch (error) {
@@ -67,7 +65,7 @@ export class AttendanceService {
       if (data.centerManager) {
         mongooseQuery = { ...mongooseQuery, center: data.centerManager };
       }
-      if (data.city && data.center && data.cityManager || data.cityManager) {
+      if ((data.city && data.center && data.cityManager) || data.cityManager) {
         const unwindResult = await this.model.aggregate([
           {
             $match: {
@@ -93,7 +91,6 @@ export class AttendanceService {
         ]);
         const finalResult = [];
         const myResult = unwindResult.map((itm) => {
-
           if (data.cityManager.includes(itm._id)) {
             if (data.cityManager === undefined || data.cityManager === null) {
               null;
@@ -187,6 +184,62 @@ export class AttendanceService {
       return attendance;
     } catch (error) {
       return 'Error in Delete Attendance';
+    }
+  }
+
+  async getAttendanceByCityCenterId(data: any) {
+    if (data) {
+      let Ids = [];
+      await data.forEach((item) => {
+        Ids.push(new ObjectId(item));
+      });
+      console.log('Ids', Ids);
+
+      const unwindResult = await this.model.aggregate([
+        {
+          $match: {
+            $or: [{ city: { $in: Ids } }, { center: { $in: Ids } }],
+          },
+        },
+        {
+          $lookup: {
+            from: 'cities', 
+            localField: 'city',
+            foreignField: '_id',
+            as: 'cityInfo',
+          },
+        },
+        {
+          $lookup: {
+            from: 'centers', 
+            localField: 'center',
+            foreignField: '_id',
+            as: 'centerInfo',
+          },
+        },
+        {
+          $unwind: '$cityInfo',
+        },
+        {
+          $unwind: '$centerInfo',
+        },
+        {
+          $project: {
+            _id: 1,
+            city: '$cityInfo',
+            center: '$centerInfo',
+            newMembers: 1,
+            employees: 1,
+            nonEmployees: 1,
+            cityManager: 1,
+            centerManager: 1,
+            date: 1,
+          },
+        },
+      ]);
+
+      console.log('unwindResult', unwindResult);
+      return unwindResult;
     }
   }
 
